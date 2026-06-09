@@ -2,10 +2,10 @@
 
 > *“The lesson of time is time only lessens.”*
 
-**Waking Hours** is a philosophical time tool. Instead of counting up from midnight or down to midnight, it counts down the **16 waking hours** you actually have each day – from the moment you wake up until you sleep. (based on 8-hour sleep routine)
+**Waking Hours** is a philosophy-inspired time tool. Instead of counting up from midnight or down to midnight, it counts down the **16 waking hours** you actually have each day – from the moment you wake up until you sleep. (based on 8-hour sleep routine)
 
 
-It came from a verse I was writing, one last line (quoted above) that sparked the question: *What if we treated 16 hours as the real day?*
+It came from a verse I was writing, one last line (quoted above) that sparked the question: *What if we treated our 16 hours waking hours as the real day?*
 
 ---
 
@@ -50,7 +50,7 @@ The quote – *“the lesson of time is time only lessens”* – is the line th
 
 ## 🚀 Try it live here
 
-> **Live demo:** [https://Trevon-Swift.github.io/waking-hours/](https://Trevon-Swift.github.io/waking-hours/)  
+> **Live demo:** [https://trevon-swift.github.io/Waking-Hours/](https://trevon-swift.github.io/Waking-Hours/)  
 
 No installation. No login. Just open, set your wake time, and allocate.
 
