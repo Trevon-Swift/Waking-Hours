@@ -80,7 +80,7 @@ The arc fills as the day passes. When 16 hours are up, the clock goes dark – t
 
 ## 📸 Share it
 
-I posted this on LinkedIn with a short screen recording and the verse behind it. The reaction surprised me. If you use it or remix it, tag me – I’d love to see how you frame your own waking hours.
+If you use it or remix it and find it useful, tag me – I’d love to see how you frame your own waking hours or the impact it made for you.
 
 ---
 
@@ -101,7 +101,7 @@ I posted this on LinkedIn with a short screen recording and the verse behind it.
 - Daily / weekly history view  
 - Export allocations as a simple log  
 - Custom category names  
-
+- Overtime clock
 Pull requests and forks are welcome.
 
 ---
@@ -115,7 +115,7 @@ MIT – use it, break it, remix it.
 ## 💬 One last thing
 
 This tool isn’t about productivity guilt. It’s about awareness.  
-You don’t have to account for every hour. But seeing them – really seeing them – changes how you move through the day.
+You don’t have to account for every hour. But seeing them – really seeing them with intention – changes how you move through the day.
 
 *“Gotta dig through the mess just to find the message.”*
 
