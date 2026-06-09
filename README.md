@@ -41,7 +41,7 @@ It’s part timer, part journal, part ritual.
 
 ## 🎯 Why 16 hours?
 
-Because the other 8 are for sleep, ideally. Edit yours as you like.  
+Because the other 8 are for sleep, ideally.  
 When you frame a day as 16 hours instead of 24, every hour feels more precious. You stop asking *“what did I do all day?”* and start asking *“where did my waking hours go?”*
 
 The quote – *“the lesson of time is time only lessens”* – is the line that sparked this project. It’s not meant to be nihilistic. It’s a call to spend our time deliberately with discernment, instead of letting it waste away with regret. 
