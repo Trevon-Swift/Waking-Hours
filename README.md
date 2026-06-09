@@ -117,7 +117,3 @@ MIT – use it, break it, remix it.
 
 This tool isn’t about productivity guilt. It’s about awareness.  
 You don’t have to account for every hour. But seeing them – really seeing them with intention – changes how you move through the day.
-
-*“Gotta dig through the mess just to find the message.”*
-
-– Tre Swift 
