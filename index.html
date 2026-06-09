@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Waking Hours</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Cormorant+Garamond:ital,wght@0,300;1,300;1,400&family=Oswald:wght@200;300&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{min-height:100%}
+body{
+  min-height:100vh;background:#07070a;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Oswald',sans-serif;
+  padding:36px 20px;overflow-y:auto;
+}
+#grain{position:fixed;inset:0;opacity:0.04;pointer-events:none;z-index:50;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+#ambient{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:700px;height:700px;pointer-events:none;z-index:0;
+  background:radial-gradient(circle,rgba(175,105,18,0.065) 0%,transparent 65%);}
+.page{
+  position:relative;z-index:1;
+  display:flex;align-items:center;gap:52px;
+  width:100%;max-width:780px;
+}
+@media(max-width:740px){.page{flex-direction:column;align-items:center;gap:36px}}
+
+/* ── CLOCK ── */
+.clock{display:flex;flex-direction:column;align-items:center;gap:clamp(13px,2.2vh,20px);flex:0 0 auto;}
+.eyebrow{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:10px;letter-spacing:0.55em;text-transform:uppercase;color:#9a8a55;}
+.arc-wrap{position:relative;width:min(320px,86vw,62vh);aspect-ratio:1;}
+.arc-svg{transform:rotate(-90deg);display:block;width:100%;height:100%}
+.arc-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;width:88%;}
+.digits{font-family:'Share Tech Mono','Courier New',monospace;font-size:clamp(32px,9.5vw,55px);line-height:1;color:#e0a84a;display:flex;align-items:baseline;transition:color 0.8s;}
+.digits.expired{color:#1c1008}
+.colon{color:#7a5820;font-size:clamp(26px,8vw,46px);margin:0 1px;animation:blink 1s step-end infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.1}}
+.d-label{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:10px;letter-spacing:0.48em;text-transform:uppercase;color:#8a7a4a;margin-top:3px;}
+.hrs-rem{font-size:12px;font-weight:200;letter-spacing:0.22em;text-transform:uppercase;color:#a08848;margin-top:2px;}
+.bar-wrap{display:flex;flex-direction:column;align-items:center;gap:6px;width:min(260px,70vw);}
+.bar-track{width:100%;height:1px;background:#181410;position:relative}
+.bar-fill{height:100%;max-width:100%;background:linear-gradient(90deg,#4a2a08,#8a5018);position:relative;transition:width 1s linear;}
+.bar-fill::after{content:'';position:absolute;right:-0.5px;top:-2.5px;width:1px;height:6px;background:#d8a040;}
+.bar-labels{display:flex;justify-content:space-between;width:100%;}
+.b-label{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:10px;letter-spacing:0.28em;text-transform:uppercase;color:#8a7a4a;}
+.controls{display:flex;flex-direction:column;align-items:center;gap:8px;}
+.wake-btn{background:none;border:none;cursor:pointer;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:0.26em;color:#9a8a55;text-transform:uppercase;padding:4px 8px;transition:color 0.3s;}
+.wake-btn:hover{color:#c8a870}
+.edit-row{display:none;align-items:center;gap:8px;}
+.edit-row.on{display:flex}
+.t-input{background:#0c0a06;border:1px solid #2a2010;color:#c09030;font-family:'Share Tech Mono','Courier New',monospace;font-size:18px;padding:5px 10px;outline:none;width:100px;text-align:center;color-scheme:dark;}
+.t-input:focus{border-color:#402e14}
+.s-btn{background:none;border:1px solid #2a2010;color:#7a6030;font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:0.38em;text-transform:uppercase;padding:6px 12px;cursor:pointer;transition:all 0.2s;}
+.s-btn:hover{border-color:#7a6030;color:#b08840}
+.x-btn{background:none;border:none;color:#7a6030;font-size:17px;cursor:pointer;padding:4px 6px;line-height:1;transition:color 0.2s;}
+.x-btn:hover{color:#b08840}
+.quote{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:12px;letter-spacing:0.1em;color:#6a5e38;text-align:center;max-width:280px;line-height:1.8;}
+
+/* ── ALLOCATOR ── */
+.alloc{flex:1;min-width:255px;max-width:290px;display:flex;flex-direction:column;gap:10px;}
+@media(max-width:740px){.alloc{max-width:min(320px,90vw);width:100%}}
+.alloc-label{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:10px;letter-spacing:0.52em;text-transform:uppercase;color:#9a8a55;margin-bottom:2px;}
+.alloc-hint{font-family:'Cormorant Garamond',serif;font-size:10px;font-style:italic;color:#5a5030;letter-spacing:0.06em;line-height:1.5;margin-top:-4px;margin-bottom:2px;}
+/* cards */
+.acard{border:1px solid #282010;background:#0d0b08;padding:13px 15px;cursor:pointer;transition:border-color 0.2s;user-select:none;border-radius:2px;}
+.acard:hover{border-color:#4a3a18}
+.chdr{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px;}
+.cname{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:10px;letter-spacing:0.45em;text-transform:uppercase;color:#9a8a55;}
+.cct{font-family:'Share Tech Mono','Courier New',monospace;font-size:18px;color:#d8a040;}
+.cct.zero{color:#3a3020}
+.blkgrid{display:flex;flex-wrap:wrap;gap:3px;min-height:12px;}
+.blk{width:11px;height:11px;flex-shrink:0;border-radius:1px;}
+.blk-a{background:#2e2210;border:1px solid #1e1608;}
+.blk-u{background:#7a4a16;border:1px solid #5a3410;}
+.uhint{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:10px;letter-spacing:0.16em;color:#3c3020;margin-top:8px;min-height:14px;transition:color 0.25s;}
+.acard:hover .uhint{color:#7a6030}
+.catgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.catcard{border:1px solid #201810;background:#0d0b08;padding:12px 13px;cursor:pointer;transition:border-color 0.18s,background 0.15s;user-select:none;min-height:76px;border-radius:2px;}
+.catcard:hover{border-color:#3a2c12;background:#100e0a}
+.catcard.spent{opacity:0.35;pointer-events:none;}
+.catcard.nocursor{pointer-events:none;}
+.flash{animation:fl 0.4s ease-out;}
+@keyframes fl{0%{border-color:#9a6a28}60%{border-color:#5a4020}100%{border-color:#201810}}
+.resetrow{text-align:center;padding-top:2px;}
+.rbtn{background:none;border:none;cursor:pointer;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:0.38em;text-transform:uppercase;color:#3a3020;padding:4px 8px;transition:color 0.2s;}
+.rbtn:hover{color:#7a6030}
+</style>
+</head>
+<body>
+<div id="grain"></div>
+<div id="ambient"></div>
+
+<div class="page">
+
+  <!-- CLOCK -->
+  <div class="clock">
+    <div class="eyebrow">16 Waking Hours</div>
+    <div class="arc-wrap">
+      <svg class="arc-svg" viewBox="0 0 360 360">
+        <defs>
+          <filter id="tg" x="-130%" y="-130%" width="360%" height="360%">
+            <feGaussianBlur stdDeviation="2.5" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <circle fill="none" stroke="#111008" stroke-width="1" cx="180" cy="180" r="150"/>
+        <circle id="arc" fill="none" stroke="#7a4615" stroke-width="1.5"
+          cx="180" cy="180" r="150" stroke-dasharray="0 942.48" stroke-dashoffset="0"/>
+        <g id="ticks"></g>
+        <circle id="tip" r="2.5" fill="#d8a040" filter="url(#tg)" cx="330" cy="180" style="display:none"/>
+      </svg>
+      <div class="arc-center">
+        <div class="digits" id="digits">
+          <span id="hh">16</span><span class="colon">:</span><span id="mm">00</span><span class="colon">:</span><span id="ss">00</span>
+        </div>
+        <div class="d-label">hrs &middot; min &middot; sec remaining</div>
+        <div class="hrs-rem" id="hrsRem">16.0 hrs remaining</div>
+      </div>
+    </div>
+    <div class="bar-wrap">
+      <div class="bar-track"><div class="bar-fill" id="bar" style="width:0%"></div></div>
+      <div class="bar-labels"><span class="b-label">Wake</span><span class="b-label">Sleep</span></div>
+    </div>
+    <div class="controls">
+      <button class="wake-btn" id="wBtn">woke at <span id="wDisp">--:--</span> &mdash; adjust</button>
+      <div class="edit-row" id="eRow">
+        <input type="time" class="t-input" id="tIn"/>
+        <button class="s-btn" id="sBtn">Set</button>
+        <button class="x-btn" id="xBtn">&times;</button>
+      </div>
+    </div>
+    <div class="quote">&ldquo;The lesson of time is time only lessens.&rdquo;</div>
+  </div>
+
+  <!-- ALLOCATOR -->
+  <div class="alloc">
+    <div class="alloc-label">Allocate Your Hours</div>
+    <div class="alloc-hint">Tap a category to assign an hour.<br>Tap Available to undo the last move.</div>
+
+    <div class="acard" id="availCard" onclick="undoLast()">
+      <div class="chdr">
+        <span class="cname">Available</span>
+        <span class="cct" id="availCt">16h</span>
+      </div>
+      <div class="blkgrid" id="availGrid"></div>
+      <div class="uhint" id="uhint"></div>
+    </div>
+
+    <div class="catgrid">
+      <div class="catcard" id="cat-Work" onclick="alloc('Work')">
+        <div class="chdr">
+          <span class="cname">Work</span>
+          <span class="cct zero" id="ct-Work">0h</span>
+        </div>
+        <div class="blkgrid" id="grid-Work"></div>
+      </div>
+      <div class="catcard" id="cat-Creative" onclick="alloc('Creative')">
+        <div class="chdr">
+          <span class="cname">Creative</span>
+          <span class="cct zero" id="ct-Creative">0h</span>
+        </div>
+        <div class="blkgrid" id="grid-Creative"></div>
+      </div>
+      <div class="catcard" id="cat-Review" onclick="alloc('Review')">
+        <div class="chdr">
+          <span class="cname">Review</span>
+          <span class="cct zero" id="ct-Review">0h</span>
+        </div>
+        <div class="blkgrid" id="grid-Review"></div>
+      </div>
+      <div class="catcard" id="cat-Fitness" onclick="alloc('Fitness')">
+        <div class="chdr">
+          <span class="cname">Fitness</span>
+          <span class="cct zero" id="ct-Fitness">0h</span>
+        </div>
+        <div class="blkgrid" id="grid-Fitness"></div>
+      </div>
+    </div>
+
+    <div class="resetrow">
+      <button class="rbtn" onclick="resetAlloc()">reset all</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── CLOCK ──
+const TOTAL=16*3600, C=2*Math.PI*150, CX=180, CY=180, R=150;
+const pad=n=>String(Math.floor(n)).padStart(2,'0');
+const defWake=()=>{const n=new Date();return pad(n.getHours())+':'+pad(n.getMinutes())};
+let wt=localStorage.getItem('waking_wt')||defWake();
+
+const tg=document.getElementById('ticks');
+for(let i=0;i<16;i++){
+  const a=(i/16)*2*Math.PI;
+  const ln=document.createElementNS('http://www.w3.org/2000/svg','line');
+  ln.setAttribute('x1',CX+(R-9)*Math.cos(a));ln.setAttribute('y1',CY+(R-9)*Math.sin(a));
+  ln.setAttribute('x2',CX+(R+6)*Math.cos(a));ln.setAttribute('y2',CY+(R+6)*Math.sin(a));
+  ln.setAttribute('stroke','#161208');ln.setAttribute('stroke-width','1');
+  ln.id='tk'+i;tg.appendChild(ln);
+}
+
+const applyWt=v=>{
+  wt=v;localStorage.setItem('waking_wt',v);
+  document.getElementById('wDisp').textContent=v;
+  document.getElementById('tIn').value=v;
+};
+applyWt(wt);
+
+const getStatus=()=>{
+  const now=new Date(),[h,m]=wt.split(':').map(Number);
+  const w=new Date();w.setHours(h,m,0,0);
+  if(w>now)w.setDate(w.getDate()-1);
+  const slp=new Date(w.getTime()+TOTAL*1000);
+  const re=Math.max(0,(slp-now)/1000);
+  return{re,prog:Math.min(1,Math.max(0,(now-w)/1000)/TOTAL),exp:re<=0};
+};
+
+const clockTick=()=>{
+  const{re,prog,exp}=getStatus();
+  document.getElementById('hh').textContent=pad(re/3600);
+  document.getElementById('mm').textContent=pad((re%3600)/60);
+  document.getElementById('ss').textContent=pad(re%60);
+  document.getElementById('digits').classList.toggle('expired',exp);
+  document.getElementById('hrsRem').textContent=exp?'rest now':(re/3600).toFixed(1)+' hrs remaining';
+  const arcEl=document.getElementById('arc');
+  arcEl.setAttribute('stroke-dasharray',`${C*prog} ${C*(1-prog)}`);
+  arcEl.setAttribute('stroke',exp?'#1a0c04':'#7a4615');
+  document.getElementById('bar').style.width=(prog*100)+'%';
+  const tip=document.getElementById('tip');
+  if(!exp&&prog>0.004){
+    const a=prog*2*Math.PI;
+    tip.setAttribute('cx',CX+R*Math.cos(a));tip.setAttribute('cy',CY+R*Math.sin(a));
+    tip.style.display='';
+  }else tip.style.display='none';
+  for(let i=0;i<16;i++){
+    const t=document.getElementById('tk'+i);
+    if(t)t.setAttribute('stroke',(i/16)<prog?'#3c2610':'#161208');
+  }
+};
+clockTick();setInterval(clockTick,1000);
+
+const closeEdit=()=>{document.getElementById('eRow').classList.remove('on');document.getElementById('wBtn').style.display=''};
+document.getElementById('wBtn').onclick=()=>{document.getElementById('wBtn').style.display='none';document.getElementById('eRow').classList.add('on');document.getElementById('tIn').focus()};
+document.getElementById('sBtn').onclick=()=>{const v=document.getElementById('tIn').value;if(v)applyWt(v);closeEdit()};
+document.getElementById('xBtn').onclick=closeEdit;
+document.getElementById('tIn').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('sBtn').click();if(e.key==='Escape')closeEdit()});
+
+// ── ALLOCATOR ──
+const CATS=['Work','Creative','Review','Fitness'];
+let avail=16;
+const allocated={Work:0,Creative:0,Review:0,Fitness:0};
+const hist=[];
+
+// Load persisted state
+try{
+  const s=JSON.parse(localStorage.getItem('waking_alloc')||'null');
+  if(s){avail=s.avail??16;Object.assign(allocated,s.al??{});hist.push(...(s.h??[]));}
+}catch(e){}
+
+const saveAlloc=()=>localStorage.setItem('waking_alloc',JSON.stringify({avail,al:{...allocated},h:[...hist]}));
+
+const mkBlk=type=>{const b=document.createElement('div');b.className='blk '+(type==='a'?'blk-a':'blk-u');return b};
+
+const flash=el=>{el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),450)};
+
+const renderAlloc=()=>{
+  const ag=document.getElementById('availGrid');
+  ag.innerHTML='';
+  for(let i=0;i<avail;i++)ag.appendChild(mkBlk('a'));
+  const ct=document.getElementById('availCt');
+  ct.textContent=avail+'h';
+  ct.className='cct'+(avail===0?' zero':'');
+  const last=hist.length?hist[hist.length-1]:'';
+  document.getElementById('uhint').textContent=last?'\u21a9 undo \u2014 '+last:'';
+
+  const depleted=avail<=0;
+  CATS.forEach(cat=>{
+    const g=document.getElementById('grid-'+cat);
+    g.innerHTML='';
+    for(let i=0;i<allocated[cat];i++)g.appendChild(mkBlk('u'));
+    const ctEl=document.getElementById('ct-'+cat);
+    ctEl.textContent=allocated[cat]+'h';
+    ctEl.className='cct'+(allocated[cat]===0?' zero':'');
+    const card=document.getElementById('cat-'+cat);
+    card.classList.toggle('spent',depleted&&allocated[cat]===0);
+    card.classList.toggle('nocursor',depleted&&allocated[cat]>0);
+  });
+};
+
+function alloc(cat){
+  if(avail<=0)return;
+  avail--;allocated[cat]++;hist.push(cat);
+  flash(document.getElementById('cat-'+cat));
+  renderAlloc();saveAlloc();
+}
+
+function undoLast(){
+  if(!hist.length)return;
+  const last=hist.pop();
+  avail++;allocated[last]--;
+  flash(document.getElementById('availCard'));
+  renderAlloc();saveAlloc();
+}
+
+function resetAlloc(){
+  avail=16;CATS.forEach(c=>{allocated[c]=0});hist.length=0;
+  renderAlloc();saveAlloc();
+}
+
+renderAlloc();
+</script>
+</body>
+</html>
