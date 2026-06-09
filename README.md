@@ -102,6 +102,7 @@ If you use it or remix it and find it useful, tag me – I’d love to see how y
 - Export allocations as a simple log  
 - Custom category names  
 - Overtime clock
+  
 Pull requests and forks are welcome.
 
 ---
